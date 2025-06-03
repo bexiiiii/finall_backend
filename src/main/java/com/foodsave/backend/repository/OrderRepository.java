@@ -21,19 +21,26 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     
-    List<Order> findByUser(User user);
+    @Query("SELECT o FROM Order o WHERE o.user = :user")
+    List<Order> findByUser(@Param("user") User user);
     
-    List<Order> findByUserOrderByCreatedAtDesc(User user);
+    @Query("SELECT o FROM Order o WHERE o.user = :user ORDER BY o.createdAt DESC")
+    List<Order> findByUserOrderByCreatedAtDesc(@Param("user") User user);
     
-    List<Order> findByStore(Store store);
+    @Query("SELECT o FROM Order o WHERE o.store = :store")
+    List<Order> findByStore(@Param("store") Store store);
     
-    List<Order> findByStoreOrderByCreatedAtDesc(Store store);
+    @Query("SELECT o FROM Order o WHERE o.store = :store ORDER BY o.createdAt DESC")
+    List<Order> findByStoreOrderByCreatedAtDesc(@Param("store") Store store);
     
-    List<Order> findByStatus(OrderStatus status);
+    @Query("SELECT o FROM Order o WHERE o.status = :status")
+    List<Order> findByStatus(@Param("status") OrderStatus status);
     
-    List<Order> findByUserAndStatus(User user, OrderStatus status);
+    @Query("SELECT o FROM Order o WHERE o.user = :user AND o.status = :status")
+    List<Order> findByUserAndStatus(@Param("user") User user, @Param("status") OrderStatus status);
     
-    List<Order> findByStoreAndStatus(Store store, OrderStatus status);
+    @Query("SELECT o FROM Order o WHERE o.store = :store AND o.status = :status")
+    List<Order> findByStoreAndStatus(@Param("store") Store store, @Param("status") OrderStatus status);
     
     @Query("SELECT o FROM Order o WHERE o.user = :user AND o.createdAt BETWEEN :startDate AND :endDate")
     List<Order> findByUserAndDateRange(
@@ -60,32 +67,68 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT COUNT(o) FROM Order o WHERE o.user = :user")
     Long countOrdersByUser(@Param("user") User user);
 
-    Page<Order> findByUserId(Long userId, Pageable pageable);
-    Page<Order> findByStoreId(Long storeId, Pageable pageable);
-    Page<Order> findByStatus(OrderStatus status, Pageable pageable);
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId")
+    Page<Order> findByUserId(@Param("userId") Long userId, Pageable pageable);
     
-    @Query("SELECT o FROM Order o WHERE o.store.id = ?1 AND o.status = ?2")
-    Page<Order> findByStoreIdAndStatus(Long storeId, OrderStatus status, Pageable pageable);
+    @Query("SELECT o FROM Order o WHERE o.store.id = :storeId")
+    Page<Order> findByStoreId(@Param("storeId") Long storeId, Pageable pageable);
     
-    @Query("SELECT o FROM Order o WHERE o.paymentMethod = ?1")
-    Page<Order> findByPaymentMethod(PaymentMethod paymentMethod, Pageable pageable);
+    @Query("SELECT o FROM Order o WHERE o.status = :status")
+    Page<Order> findByStatus(@Param("status") OrderStatus status, Pageable pageable);
     
-    @Query("SELECT o FROM Order o WHERE o.qrCode = ?1")
-    Optional<Order> findByQrCode(String qrCode);
+    @Query("SELECT o FROM Order o WHERE o.store.id = :storeId AND o.status = :status")
+    Page<Order> findByStoreIdAndStatus(@Param("storeId") Long storeId, @Param("status") OrderStatus status, Pageable pageable);
+    
+    @Query("SELECT o FROM Order o WHERE o.paymentMethod = :paymentMethod")
+    Page<Order> findByPaymentMethod(@Param("paymentMethod") PaymentMethod paymentMethod, Pageable pageable);
+    
+    @Query("SELECT o FROM Order o WHERE o.qrCode = :qrCode")
+    Optional<Order> findByQrCode(@Param("qrCode") String qrCode);
 
-    List<Order> findByUserAndStore(User user, Store store);
-    List<Order> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
-    List<Order> findByStoreAndCreatedAtBetween(Store store, LocalDateTime start, LocalDateTime end);
-    List<Order> findByUserAndCreatedAtBetween(User user, LocalDateTime start, LocalDateTime end);
-    Page<Order> findByUser(User user, Pageable pageable);
-    Page<Order> findByStore(Store store, Pageable pageable);
-    Page<Order> findByUserAndStore(User user, Store store, Pageable pageable);
+    @Query("SELECT o FROM Order o WHERE o.user = :user AND o.store = :store")
+    List<Order> findByUserAndStore(@Param("user") User user, @Param("store") Store store);
+    
+    @Query("SELECT o FROM Order o WHERE o.createdAt BETWEEN :start AND :end")
+    List<Order> findByCreatedAtBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    
+    @Query("SELECT o FROM Order o WHERE o.store = :store AND o.createdAt BETWEEN :start AND :end")
+    List<Order> findByStoreAndCreatedAtBetween(
+            @Param("store") Store store, 
+            @Param("start") LocalDateTime start, 
+            @Param("end") LocalDateTime end);
+    
+    @Query("SELECT o FROM Order o WHERE o.user = :user AND o.createdAt BETWEEN :start AND :end")
+    List<Order> findByUserAndCreatedAtBetween(
+            @Param("user") User user, 
+            @Param("start") LocalDateTime start, 
+            @Param("end") LocalDateTime end);
+    
+    @Query("SELECT o FROM Order o WHERE o.user = :user")
+    Page<Order> findByUser(@Param("user") User user, Pageable pageable);
+    
+    @Query("SELECT o FROM Order o WHERE o.store = :store")
+    Page<Order> findByStore(@Param("store") Store store, Pageable pageable);
+    
+    @Query("SELECT o FROM Order o WHERE o.user = :user AND o.store = :store")
+    Page<Order> findByUserAndStore(@Param("user") User user, @Param("store") Store store, Pageable pageable);
 
-    Optional<Order> findByIdAndUser(Long id, User user);
-    Optional<Order> findByIdAndStore(Long id, Store store);
-    List<Order> findByUserIdAndStatus(Long userId, String status);
-    List<Order> findByStoreIdAndUserId(Long storeId, Long userId);
-    List<Order> findByStoreIdAndCreatedAtBetween(Long storeId, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    @Query("SELECT o FROM Order o WHERE o.id = :id AND o.user = :user")
+    Optional<Order> findByIdAndUser(@Param("id") Long id, @Param("user") User user);
+    
+    @Query("SELECT o FROM Order o WHERE o.id = :id AND o.store = :store")
+    Optional<Order> findByIdAndStore(@Param("id") Long id, @Param("store") Store store);
+    
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.status = :status")
+    List<Order> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") String status);
+    
+    @Query("SELECT o FROM Order o WHERE o.store.id = :storeId AND o.user.id = :userId")
+    List<Order> findByStoreIdAndUserId(@Param("storeId") Long storeId, @Param("userId") Long userId);
+    
+    @Query("SELECT o FROM Order o WHERE o.store.id = :storeId AND o.createdAt BETWEEN :start AND :end")
+    List<Order> findByStoreIdAndCreatedAtBetween(
+            @Param("storeId") Long storeId, 
+            @Param("start") LocalDateTime start, 
+            @Param("end") LocalDateTime end);
 
     @Query("SELECT COUNT(o) FROM Order o")
     long count();

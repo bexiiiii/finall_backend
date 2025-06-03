@@ -18,22 +18,30 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
-    List<User> findByRole(UserRole role);
+    
+    @Query("SELECT u FROM User u WHERE u.email = :email")
+    Optional<User> findByEmail(@Param("email") String email);
+    
+    @Query("SELECT u FROM User u WHERE u.role = :role")
+    List<User> findByRole(@Param("role") UserRole role);
     
     @Query("SELECT u FROM User u JOIN u.stores s WHERE s.id = :storeId")
     List<User> findByStoreId(@Param("storeId") Long storeId);
     
-    @Query("SELECT u FROM User u WHERE u.role = ?1 AND u.stores IS EMPTY")
-    List<User> findUnassignedStoreManagers(UserRole role);
+    @Query("SELECT u FROM User u WHERE u.role = :role AND u.stores IS EMPTY")
+    List<User> findUnassignedStoreManagers(@Param("role") UserRole role);
     
-    boolean existsByEmail(String email);
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.email = :email")
+    boolean existsByEmail(@Param("email") String email);
     
     @Query("SELECT u FROM User u WHERE u.active = true")
     List<User> findAllActive();
 
-    Optional<User> findByVerificationToken(String token);
-    Optional<User> findByResetToken(String token);
+    @Query("SELECT u FROM User u WHERE u.verificationToken = :token")
+    Optional<User> findByVerificationToken(@Param("token") String token);
+    
+    @Query("SELECT u FROM User u WHERE u.resetToken = :token")
+    Optional<User> findByResetToken(@Param("token") String token);
 
     @Query("SELECT u FROM User u WHERE u.email = :email AND u.active = true")
     Optional<User> findActiveByEmail(@Param("email") String email);
@@ -61,6 +69,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT AVG(o.total) FROM Order o WHERE o.store = :store GROUP BY o.user")
     BigDecimal averageOrderValueByStore(@Param("store") Store store);
 
-    Page<User> findByFirstNameContainingOrLastNameContaining(String firstName, String lastName, Pageable pageable);
-    List<User> findByFirstNameContainingOrLastNameContaining(String firstName, String lastName);
+    @Query("SELECT u FROM User u WHERE LOWER(u.firstName) LIKE LOWER(CONCAT('%', :firstName, '%')) " +
+           "OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))")
+    Page<User> findByFirstNameContainingOrLastNameContaining(
+        @Param("firstName") String firstName, 
+        @Param("lastName") String lastName, 
+        Pageable pageable
+    );
+
+    @Query("SELECT u FROM User u WHERE LOWER(u.firstName) LIKE LOWER(CONCAT('%', :firstName, '%')) " +
+           "OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))")
+    List<User> findByFirstNameContainingOrLastNameContaining(
+        @Param("firstName") String firstName, 
+        @Param("lastName") String lastName
+    );
 }
