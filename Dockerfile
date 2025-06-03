@@ -1,4 +1,4 @@
-# Build stage
+# ---------- Build stage ----------
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
@@ -12,23 +12,23 @@ COPY src ./src
 # Build the application
 RUN mvn package -DskipTests
 
-# Run stage
+
+# ---------- Run stage ----------
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Copy the built jar from build stage
+# Copy the built JAR from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Create a non-root user
+# Create a non-root user for security
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
-# Expose the application port
+# Expose the default Spring Boot port
 EXPOSE 8080
 
-# Set environment variables
-ENV SPRING_PROFILES_ACTIVE=prod
+# Set JVM options (can be overridden at runtime)
 ENV JAVA_OPTS="-Xms512m -Xmx1024m"
 
-# Run the application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"] 
+# Use shell form to allow environment variable expansion
+ENTRYPOINT sh -c "java $JAVA_OPTS -jar app.jar"
