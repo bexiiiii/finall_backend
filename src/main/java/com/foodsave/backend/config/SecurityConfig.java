@@ -36,41 +36,39 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-    .anyRequest().permitAll()
-)
-            // .authorizeHttpRequests(auth -> auth
-            //     // Swagger UI
-            //     .requestMatchers("/swagger-ui/**").permitAll()
-            //     .requestMatchers("/swagger-ui.html").permitAll()
-            //     .requestMatchers("/v3/api-docs/**").permitAll()
-            //     .requestMatchers("/swagger-resources/**").permitAll()
-            //     .requestMatchers("/webjars/**").permitAll()
+
+                // Swagger UI
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/swagger-ui.html").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/swagger-resources/**").permitAll()
+                .requestMatchers("/webjars/**").permitAll()
                 
-            //     // Auth endpoints
-            //     .requestMatchers("/api/auth/**").permitAll()
-            //     .requestMatchers("/api/users/**").permitAll()
-            //     .requestMatchers("/api/permissions/**").permitAll() // Временно для тестирования
+                // Auth endpoints
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/users/**").permitAll()
+                .requestMatchers("/api/permissions/**").permitAll() // Временно для тестирования
                 
-            //     // Public product endpoints - more specific first
-            //     .requestMatchers(HttpMethod.GET, "/api/products/featured").permitAll()
-            //     .requestMatchers(HttpMethod.GET, "/api/products/categories").permitAll()
-            //     .requestMatchers(HttpMethod.GET, "/api/products/store/**").permitAll()
-            //     .requestMatchers(HttpMethod.GET, "/api/products/*").permitAll()
-            //     .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
-            //     .requestMatchers(HttpMethod.POST, "/api/products").permitAll() // Временно для тестирования
-            //     .requestMatchers(HttpMethod.PUT, "/api/products/**").permitAll() // Временно для тестирования
-            //     .requestMatchers(HttpMethod.DELETE, "/api/products/**").permitAll() // Временно для тестирования
-            //     .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                // Public product endpoints - more specific first
+                .requestMatchers(HttpMethod.GET, "/api/products/featured").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products/categories").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products/store/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/products").permitAll() // Временно для тестирования
+                .requestMatchers(HttpMethod.PUT, "/api/products/**").permitAll() // Временно для тестирования
+                .requestMatchers(HttpMethod.DELETE, "/api/products/**").permitAll() // Временно для тестирования
+                .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                 
-            //     // Public store endpoints
-            //     .requestMatchers(HttpMethod.GET, "/api/stores/*").permitAll()
+                // Public store endpoints
+                .requestMatchers(HttpMethod.GET, "/api/stores/*").permitAll()
                 
-            //     // Actuator
-            //     .requestMatchers("/actuator/**").permitAll()
+                // Actuator
+                .requestMatchers("/actuator/**").permitAll()
                 
-            //     // All other requests need authentication
-            //     .anyRequest().authenticated()
-            // )
+                // All other requests need authentication
+                .anyRequest().authenticated()
+            )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
