@@ -4,6 +4,7 @@ import com.foodsave.backend.domain.enums.UserRole;
 import com.foodsave.backend.dto.AuthRequestDTO;
 import com.foodsave.backend.dto.AuthResponseDTO;
 import com.foodsave.backend.dto.RegisterRequestDTO;
+import com.foodsave.backend.dto.UserDTO;
 import com.foodsave.backend.entity.User;
 import com.foodsave.backend.exception.ApiException;
 import com.foodsave.backend.repository.UserRepository;
@@ -45,7 +46,7 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtTokenProvider.generateToken(authentication);
 
-        return new AuthResponseDTO(jwt, user.getEmail());
+        return new AuthResponseDTO(jwt, null, UserDTO.fromEntity(user));
     }
 
     public AuthResponseDTO register(RegisterRequestDTO request) {
@@ -70,7 +71,7 @@ public class AuthService {
         );
         String jwt = jwtTokenProvider.generateToken(authentication);
 
-        return new AuthResponseDTO(jwt, user.getEmail());
+        return new AuthResponseDTO(jwt, null, UserDTO.fromEntity(user));
     }
 
     public void verifyEmail(String token) {
@@ -97,7 +98,7 @@ public class AuthService {
 
         String newJwt = jwtTokenProvider.generateToken(authentication);
 
-        return new AuthResponseDTO(newJwt, null);
+        return new AuthResponseDTO(newJwt, null, UserDTO.fromEntity(user));
     }
 
     public void logout() {

@@ -118,6 +118,46 @@ public class ProductService {
         return convertToDTO(productRepository.save(product));
     }
 
+    /**
+     * Update stock quantity for a product
+     */
+    public ProductDTO updateStockQuantity(Long productId, Integer newQuantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        
+        if (newQuantity < 0) {
+            throw new IllegalArgumentException("Stock quantity cannot be negative");
+        }
+        
+        product.setStockQuantity(newQuantity);
+        return convertToDTO(productRepository.save(product));
+    }
+
+    /**
+     * Reduce stock quantity by specified amount
+     */
+    public ProductDTO reduceStockQuantity(Long productId, Integer quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        
+        if (product.getStockQuantity() < quantity) {
+            throw new IllegalArgumentException("Insufficient stock. Available: " + 
+                product.getStockQuantity() + ", Requested: " + quantity);
+        }
+        
+        product.setStockQuantity(product.getStockQuantity() - quantity);
+        return convertToDTO(productRepository.save(product));
+    }
+
+    /**
+     * Check if product has sufficient stock
+     */
+    public boolean hasSufficientStock(Long productId, Integer requiredQuantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        return product.getStockQuantity() >= requiredQuantity;
+    }
+
     private ProductDTO convertToDTO(Product product) {
         return ProductDTO.builder()
                 .id(product.getId())
@@ -137,6 +177,15 @@ public class ProductService {
                 .expiryDate(product.getExpiryDate())
                 .status(product.getStatus())
                 .active(product.getActive())
+                // Computed properties for frontend compatibility
+                .isAvailable(product.getActive() && 
+                           product.getStatus() == ProductStatus.AVAILABLE && 
+                           product.getStockQuantity() > 0)
+                .availableQuantity(product.getStockQuantity())
+                .imageUrl(!product.getImages().isEmpty() ? product.getImages().get(0) : null)
+                .expirationDate(product.getExpiryDate() != null ? product.getExpiryDate().toString() : null)
+                .isFeatured(product.getDiscountPercentage() != null && product.getDiscountPercentage() > 0)
+                .rating(0.0) // Default rating for now
                 .build();
     }
 

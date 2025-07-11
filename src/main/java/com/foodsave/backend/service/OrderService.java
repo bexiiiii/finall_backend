@@ -32,6 +32,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final ProductService productService;
     private final SecurityUtils securityUtils;
 
     public List<OrderDTO> getAllOrders() {
@@ -95,6 +96,15 @@ public class OrderService {
         for (OrderItemDTO itemDTO : orderDTO.getItems()) {
             Product product = productRepository.findById(itemDTO.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + itemDTO.getProductId()));
+            
+            // Check if sufficient stock is available using ProductService
+            if (!productService.hasSufficientStock(itemDTO.getProductId(), itemDTO.getQuantity())) {
+                throw new IllegalArgumentException("Insufficient stock for product '" + product.getName() + 
+                    "'. Available: " + product.getStockQuantity() + ", Requested: " + itemDTO.getQuantity());
+            }
+            
+            // Reduce stock quantity using ProductService
+            productService.reduceStockQuantity(itemDTO.getProductId(), itemDTO.getQuantity());
             
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);

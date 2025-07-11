@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -44,6 +46,21 @@ public class SecurityConfig {
                 // Auth endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/users/**").permitAll()
+                .requestMatchers("/api/permissions/**").permitAll() // Временно для тестирования
+                
+                // Public product endpoints - more specific first
+                .requestMatchers(HttpMethod.GET, "/api/products/featured").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products/categories").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products/store/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/products").permitAll() // Временно для тестирования
+                .requestMatchers(HttpMethod.PUT, "/api/products/**").permitAll() // Временно для тестирования
+                .requestMatchers(HttpMethod.DELETE, "/api/products/**").permitAll() // Временно для тестирования
+                .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                
+                // Public store endpoints
+                .requestMatchers(HttpMethod.GET, "/api/stores/*").permitAll()
                 
                 // Actuator
                 .requestMatchers("/actuator/**").permitAll()
@@ -72,7 +89,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:3000", 
+            "http://localhost:3001",
+            "http://192.168.8.147:3000"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList(
             "Authorization",

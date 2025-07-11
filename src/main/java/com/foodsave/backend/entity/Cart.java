@@ -35,10 +35,14 @@ public class Cart {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
+    @Builder.Default
     private List<CartItem> items = new ArrayList<>();
 
+    @Builder.Default
     private BigDecimal totalAmount = BigDecimal.ZERO;
+    @Builder.Default
     private BigDecimal discountAmount = BigDecimal.ZERO;
+    @Builder.Default
     private BigDecimal finalAmount = BigDecimal.ZERO;
 
     @CreatedDate

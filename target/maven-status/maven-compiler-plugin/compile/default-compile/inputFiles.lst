@@ -104,6 +104,7 @@
 /Applications/development/admin_foodsave/backend/src/main/java/com/foodsave/backend/entity/Store.java
 /Applications/development/admin_foodsave/backend/src/main/java/com/foodsave/backend/service/EmailService.java
 /Applications/development/admin_foodsave/backend/src/main/java/com/foodsave/backend/FoodSaveApplication.java
+/Applications/development/admin_foodsave/backend/src/main/java/com/foodsave/backend/config/CorsConfig.java
 /Applications/development/admin_foodsave/backend/src/main/java/com/foodsave/backend/repository/OrderItemRepository.java
 /Applications/development/admin_foodsave/backend/src/main/java/com/foodsave/backend/dto/OrderDTO.java
 /Applications/development/admin_foodsave/backend/src/main/java/com/foodsave/backend/dto/ReviewDTO.java

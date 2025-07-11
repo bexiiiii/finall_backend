@@ -68,6 +68,14 @@ public class ProductDTO {
     private Double averageRating;
     private Integer reviewCount;
     
+    // Computed properties for frontend compatibility
+    private Boolean isAvailable;
+    private Integer availableQuantity;
+    private String imageUrl;
+    private String expirationDate;
+    private Boolean isFeatured;
+    private Double rating;
+    
     private String createdAt;
     private String updatedAt;
     
@@ -90,6 +98,15 @@ public class ProductDTO {
                 .expiryDate(product.getExpiryDate())
                 .status(product.getStatus())
                 .active(product.getActive())
+                // Computed properties for frontend compatibility
+                .isAvailable(product.getActive() && 
+                           product.getStatus() == ProductStatus.AVAILABLE && 
+                           product.getStockQuantity() > 0)
+                .availableQuantity(product.getStockQuantity())
+                .imageUrl(!product.getImages().isEmpty() ? product.getImages().get(0) : null)
+                .expirationDate(product.getExpiryDate() != null ? product.getExpiryDate().toString() : null)
+                .isFeatured(product.getDiscountPercentage() != null && product.getDiscountPercentage() > 0)
+                .rating(0.0) // Default rating for now
                 .createdAt(product.getCreatedAt() != null ? product.getCreatedAt().toString() : null)
                 .updatedAt(product.getUpdatedAt() != null ? product.getUpdatedAt().toString() : null)
                 .build();

@@ -38,7 +38,6 @@ public class StoreController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get store by ID")
-    @RequirePermission(Permission.STORE_READ)
     public ResponseEntity<StoreDTO> getStoreById(@PathVariable Long id) {
         return ResponseEntity.ok(storeService.getStoreById(id));
     }

@@ -51,13 +51,25 @@ public class CartService {
         Product product = productRepository.findById(cartItemDTO.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
+        // Check if product has sufficient stock
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(product.getId()))
                 .findFirst();
 
+        int requestedQuantity = cartItemDTO.getQuantity();
+        int currentCartQuantity = existingItem.map(CartItem::getQuantity).orElse(0);
+        int totalQuantity = currentCartQuantity + requestedQuantity;
+
+        if (product.getStockQuantity() < totalQuantity) {
+            throw new IllegalArgumentException("Insufficient stock for product '" + product.getName() + 
+                "'. Available: " + product.getStockQuantity() + 
+                ", In cart: " + currentCartQuantity + 
+                ", Requested: " + requestedQuantity);
+        }
+
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + cartItemDTO.getQuantity());
+            item.setQuantity(totalQuantity);
             cartItemRepository.save(item);
         } else {
             CartItem newItem = new CartItem();
@@ -84,6 +96,13 @@ public class CartService {
             cart.getItems().remove(item);
             cartItemRepository.delete(item);
         } else {
+            // Check if product has sufficient stock for the new quantity
+            Product product = item.getProduct();
+            if (product.getStockQuantity() < quantity) {
+                throw new IllegalArgumentException("Insufficient stock for product '" + product.getName() + 
+                    "'. Available: " + product.getStockQuantity() + ", Requested: " + quantity);
+            }
+            
             item.setQuantity(quantity);
             cartItemRepository.save(item);
         }
