@@ -92,7 +92,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
             "https://foodsave.kz",
             "https://admin.foodsave.kz"
-            "https://partner.foodsave.kz""
+            "https://partner.foodsave.kz",
             "http://localhost:3000", 
             "http://localhost:3001",
             "http://192.168.8.147:3000"
