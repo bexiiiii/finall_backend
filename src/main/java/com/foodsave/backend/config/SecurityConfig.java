@@ -91,7 +91,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
             "https://foodsave.kz",
-            "https://admin.foodsave.kz"
+            "https://admin.foodsave.kz",
             "https://partner.foodsave.kz",
             "http://localhost:3000", 
             "http://localhost:3001",
